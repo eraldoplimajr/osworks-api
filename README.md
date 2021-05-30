@@ -15,3 +15,4 @@ Repositório referente ao curso iniciante de Spring Rest da algaworks
 
 - IDE eclipse
 - Maven
+- Flyway
