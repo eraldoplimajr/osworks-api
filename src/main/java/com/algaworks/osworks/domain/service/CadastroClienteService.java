@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.algaworks.osworks.domain.exception.NegocioException;
 import com.algaworks.osworks.domain.model.Cliente;
 import com.algaworks.osworks.domain.repository.ClienteRepository;
 
@@ -41,6 +42,14 @@ public class CadastroClienteService {
 	}
 
 	public Cliente salvar(Cliente cliente) {
+		
+		Cliente clienteBd = clienteRepository.findByEmail(cliente.getEmail());
+		
+		if(clienteBd != null && clienteBd != cliente) {
+			throw new NegocioException("Já existe um cliente cadastrado com este e-mail.");
+		}
+			
+		
 		return clienteRepository.save(cliente);
 	}
 	
