@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.algaworks.osworks.domain.model.Cliente;
-import com.algaworks.osworks.domain.repository.ClienteRepository;
+import com.algaworks.osworks.domain.service.CadastroClienteService;
 
 /**
  *
@@ -31,16 +31,16 @@ import com.algaworks.osworks.domain.repository.ClienteRepository;
 public class ClienteController {
 	
 	@Autowired
-	ClienteRepository clienteRepository;
+	private CadastroClienteService cadastroCliente;
 	
 	@GetMapping
 	public List<Cliente> listar() {		
-		return clienteRepository.findAll();
+		return cadastroCliente.consultarClientes();
 	}
 	
 	@GetMapping("/{clienteId}")
 	public ResponseEntity<Cliente> buscar(@PathVariable Long clienteId) {
-		Optional<Cliente> cliente = clienteRepository.findById(clienteId);
+		Optional<Cliente> cliente = cadastroCliente.consultarCliente(clienteId);
 		
 		if(cliente.isPresent()) {
 			return ResponseEntity.ok(cliente.get());
@@ -52,18 +52,18 @@ public class ClienteController {
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public Cliente adicionar(@Valid @RequestBody Cliente cliente) {
-		return clienteRepository.save(cliente);
+		return cadastroCliente.salvar(cliente);
 	}
 	
 	@PutMapping("/{clienteId}")
 	public ResponseEntity<Cliente> atualizar(@Valid @PathVariable Long clienteId, @RequestBody Cliente cliente) {
 				
-		if(!clienteRepository.existsById(clienteId)) {
+		if(!cadastroCliente.existsCliente(clienteId)) {
 			return ResponseEntity.notFound().build();
 		}
 		
 		cliente.setId(clienteId);
-		cliente = clienteRepository.save(cliente);
+		cliente = cadastroCliente.salvar(cliente);
 		
 		return ResponseEntity.ok(cliente);
 	}
@@ -71,11 +71,11 @@ public class ClienteController {
 	@DeleteMapping("/{clienteId}")
 	public ResponseEntity<Void> excluir(@PathVariable Long clienteId) {
 		
-		if(!clienteRepository.existsById(clienteId)) {
+		if(!cadastroCliente.existsCliente(clienteId)) {
 			return ResponseEntity.notFound().build();
 		}
 		
-		clienteRepository.deleteById(clienteId);
+		cadastroCliente.excluir(clienteId);
 		
 		return ResponseEntity.noContent().build();
 	}
