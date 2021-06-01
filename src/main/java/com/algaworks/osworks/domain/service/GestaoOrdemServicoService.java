@@ -1,6 +1,7 @@
 package com.algaworks.osworks.domain.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,10 @@ public class GestaoOrdemServicoService {
 		ordemServico.setDataAbertura(LocalDateTime.now());
 		
 		return ordemServicoRepository.save(ordemServico);
+	}
+	
+	public List<OrdemServico> consultarTodasOrdensServicos(){
+		return ordemServicoRepository.findAll();
 	}
 
 }
