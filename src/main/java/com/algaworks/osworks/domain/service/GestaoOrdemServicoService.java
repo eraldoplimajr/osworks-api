@@ -7,11 +7,14 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.algaworks.osworks.domain.exception.EntidadeNaoEncotradaException;
 import com.algaworks.osworks.domain.exception.NegocioException;
 import com.algaworks.osworks.domain.model.Cliente;
+import com.algaworks.osworks.domain.model.Comentario;
 import com.algaworks.osworks.domain.model.OrdemServico;
 import com.algaworks.osworks.domain.model.StatusOrdemServico;
 import com.algaworks.osworks.domain.repository.ClienteRepository;
+import com.algaworks.osworks.domain.repository.ComentarioRepository;
 import com.algaworks.osworks.domain.repository.OrdemServicoRepository;
 
 /**
@@ -27,6 +30,9 @@ public class GestaoOrdemServicoService {
 	
 	@Autowired
 	private ClienteRepository clienteRepository;
+	
+	@Autowired
+	private ComentarioRepository comentarioRepository;
 	
 	public OrdemServico criar(OrdemServico ordemServico) {
 		
@@ -45,5 +51,37 @@ public class GestaoOrdemServicoService {
 	
 	public Optional<OrdemServico> buscarOrdemServicoPorId(Long ordemServicoId){
 		return ordemServicoRepository.findById(ordemServicoId);		
+	}
+	
+	public Comentario adicionarComentario(Long ordemServicoId, String descricao) {
+		
+		OrdemServico ordemServico = ordemServicoRepository.findById(ordemServicoId).orElseThrow(() -> new EntidadeNaoEncotradaException("Ordem de serviço não encontrada"));
+		
+		Comentario comentario = new Comentario();
+		comentario.setDataEnvio(OffsetDateTime.now());
+		comentario.setDescricao(descricao);
+		comentario.setOrdemServico(ordemServico);		
+		
+		return comentarioRepository.save(comentario);		
+	}
+	
+	public Optional<Comentario> buscar(Long comentarioId) {
+		return comentarioRepository.findById(comentarioId);		
+	}
+	
+	public List<Comentario> listarTodosComentarios(Long ordemServicoId) {
+		
+		OrdemServico ordemServico = ordemServicoRepository.findById(ordemServicoId).orElseThrow(() -> new EntidadeNaoEncotradaException("Ordem de serviço não encontrada"));
+		
+		return ordemServico.getComentarios();	
+		
+	}
+	
+	public Comentario inserir(Comentario comentario) {
+		return comentarioRepository.save(comentario);
+	}
+	
+	public void excluir(Long comentarioId) {
+		comentarioRepository.deleteById(comentarioId);
 	}
 }
